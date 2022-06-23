@@ -1,20 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import Geocode from "react-geocode";
 
 const onSubmit = (event) => {
   event.preventDefault();
   console.log("onSubmit called.");
+
+  const originTextValue = event.target.originText.value;
+  const destinationTextValue = event.target.destinationText.value;
+
+  const googleMapsApiKey = "AIzaSyB-xg1DsX-xgi4ZmKAef_j93QRb7VJ0Bqw";
+
+  Geocode.setApiKey(googleMapsApiKey);
+  Geocode.setLanguage("en");
+  Geocode.setRegion("uk");
+  Geocode.setLocationType("ROOFTOP");
+
+  Geocode.fromAddress(originTextValue).then(
+    (response) => {
+      const location = response.results[0].geometry.location;
+      console.log(location.lat);
+
+      //event.target.originLat.value = location;
+
+      //setInputValue(latId, location.lat);
+      //setInputValue(lngId, location.lng);
+    },
+    (error) => {
+      //setInputValue(latId, "");
+      //setInputValue(lngId, "");
+      console.error(error);
+    }
+  );
 }
 
 
 const AddJourneyForm = () => {
+  const [originLat, setOriginLat] = useState();
+  const [originLng, setOriginLng] = useState();
+  const [destinationLat, setDestinationLat] = useState();
+  const [destinationLng, setDestinationLng] = useState();
+  
+
+
   return (
     <div>
       <Form onSubmit={onSubmit}>
       <FormGroup className="mb-2">
             <Label>Journey start</Label>
             <Input id="originText" type="text" placeholder="e.g. Postcode, Street Name" />
-            <Input id="originLat" type="text" placeholder="[HIDDEN] Latitude"  />
+            <Input id="originLat" type="text" placeholder="[HIDDEN] Latitude" 
+              onChange={(e) => {console.log(e); setOriginLat(e.target.value)} } />
             <Input id="originLng" type="text" placeholder="[HIDDEN] Longitude" />
           </FormGroup>
 
